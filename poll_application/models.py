@@ -47,20 +47,27 @@ class User(db.Model):
         return _return
 
     def get_full_data(self):
-        aux_one = []
-        aux_six = []
+        data = []
+        polls = []
         for poll in self.poll:
-            aux_two = []
+            _questions = []
+            
             for question in poll.questions:
-                aux_three = []
-                for answer in question.answer:
-                    aux_three.append(answer._answer)
-                aux_four = {question._question: aux_three}
-                aux_two.append(aux_four)
-            aux_five = {poll.title: aux_two}
-            aux_six.append(aux_five)
+                answers_aux = [{'answer': answer._answer, 'id': answer.id} for answer in question.answer]
+                aux_four = {'title': question._question, \
+                            'id': question.id, \
+                            'answers' : answers_aux} 
+                _questions.append(aux_four) 
+            
+            polls_aux = {'id': poll.id, \
+                        'questions': _questions, \
+                        'title': poll.title}
+            polls.append(polls_aux)
 
-        return {self.username : aux_six}
+        data.append({'polls': polls})
+        _return = {'user':self.username, 'data':data}
+
+        return _return
 
 
 class Poll(db.Model):
