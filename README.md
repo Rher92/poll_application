@@ -152,4 +152,4 @@ the first of the challenges that it present to me it was give me out of my comfo
 
 the sencond de the challenges it was working with Docker since i had a lot time without work it.
 
-My assessment of this test leaves me with a lot of knowledge that I appreciate.
+My assessment of this test is that leaves me with a lot of knowledge that I appreciate.
