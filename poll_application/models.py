@@ -35,14 +35,15 @@ class User(db.Model):
         return '{}'.format(self.username)
 
     def get_questions(self):
-        aux_two = []
+        _polls = []
         
         for poll in self.poll:
-            aux_one = []
-            aux_one += [{'id': question.id, 'title':question._question} for question in poll.questions]
-            _poll_aux = {'id': poll.id, 'title': poll.title, 'questions': aux_one}
-            aux_two.append(_poll_aux)
-        _return = {'polls': aux_two}
+            _questions = []
+            _questions += [{'id': question.id, 'title':question._question} for question in poll.questions]
+            _poll_aux = {'id': poll.id, 'title': poll.title, 'questions': _questions}
+            _polls.append(_poll_aux)
+        
+        _return = {'polls': _polls}
 
         return _return
 
