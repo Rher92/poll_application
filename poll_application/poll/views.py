@@ -151,6 +151,12 @@ def get_poll(username, token):
         if request.args.get('tag'):
             tag = (request.args.get('tag')).lower()
             _tag = Tag.query.filter_by(title=tag).first()
+
+            if not _tag:
+                response = {
+                    'message': 'this tag are not registrated'.format(tag)}
+                return jsonify(response), 400
+
             polls = Poll.query.filter(Poll.tags.contains(_tag)).all() 
 
             if not polls:
@@ -158,12 +164,12 @@ def get_poll(username, token):
                     'message': 'there are not polls with tag:{}'.format(tag)}
                 return jsonify(response), 400           
 
-            _polls = [poll.title for poll in polls]
+            _polls = [{'title': poll.title, 'id': poll.id} for poll in polls]
         else:
             polls = Poll.query.filter().all()
-            _polls = [poll.title for poll in polls]
+            _polls = [{'title': poll.title, 'id': poll.id} for poll in polls]
         
-        response = {'poll': _polls}
+        response = {'polls': _polls}
         return jsonify(response), 200
 
 
