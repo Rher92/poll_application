@@ -14,7 +14,7 @@ Step one:
 Step two:
   you must move to the folder where the repository is located.
   
-  * cd /poll-application
+  * cd /poll_application
   
 Step three:
   now you have to create the docker container.
