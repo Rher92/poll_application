@@ -69,7 +69,7 @@ def create_poll(username, token):
 
         if tag_titles:
             for _tag in tag_titles:
-                _tag.lower()
+                _tag = _tag.lower()
                 tag = Tag.query.filter_by(title=_tag).first()
                 if not tag:
                     tag = Tag(title=_tag)
