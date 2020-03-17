@@ -39,11 +39,12 @@ class User(db.Model):
         
         for poll in self.poll:
             aux_one = []
-            aux_one += [question._question for question in poll.questions]
-            _poll = {poll.title: aux_one}
-            aux_two.append(_poll)
-        
-        return aux_two
+            aux_one += [{'id': question.id, 'title':question._question} for question in poll.questions]
+            _poll_aux = {'id': poll.id, 'title': poll.title, 'questions': aux_one}
+            aux_two.append(_poll_aux)
+        _return = {'polls': aux_two}
+
+        return _return
 
     def get_full_data(self):
         aux_one = []
