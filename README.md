@@ -1,13 +1,13 @@
 # Poll app
 
-this app is an platform to create Polls.
+This mini-app is an API to create Polls.
 
 ## How to run the platform ##
 
-to run the app in the space of your preferences, you must be the next steps:
+run the app in the space of your preferences, you must be the next steps:
 
 Step one:
-  in this steps you must be download the repo code. 
+  in this steps you must download the repo code. 
   
   * git clone https://github.com/Rher92/poll-application.git
 
@@ -22,7 +22,7 @@ Step three:
   * docker build -t flask-poll .
   
 Step four:
-  once created the image, you must be execute the container to play with this.
+  once created the image, you must execute the container to play it.
   
   * docker run -it --publish 8000:8000 flask-poll
 
@@ -31,7 +31,7 @@ Step four:
   
 ## How to use the API ##
 
-in the nexts examples, we will use the python requests library.
+Next examples, we will use the Python Requests Library to help us to make the requests.
 
 the **username** params in the url belong to your account.
 the **token** params in the url belong to your account.
@@ -144,12 +144,3 @@ the **token** params in the url belong to your account.
                 'title': 'First poll'}]}], 
         'user': 'pepito'}
 
-
-
-**Challenge in this test**
-
-the first of the challenges that it present to me it was give me out of my comfort zone (i always i worked with Django), in fact i do not have a ORM integrated or i have very long time without  working with flask (at least two years) it demanded me a lot hours of reading and update me. Personally i had not worked with any ORM besides the DJANGO-ORM.
-
-the sencond de the challenges it was working with Docker since i had a lot time without work it.
-
-My assessment of this test leaves me with a lot of knowledge that I appreciate.
