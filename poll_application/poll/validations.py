@@ -79,12 +79,12 @@ class UserValidated(ValidatedAux):
     def is_user_exist(self):
         if not self.user:
             self.valid = False
-            self.error = 'user not exist'
+            self.msg = 'user not exist'
 
     def is_token_valid(self):
         if self.user.token != self.token:
             self.valid = False
-            self.error = 'token not valid'
+            self.msg = 'token not valid'
 
 
 class DateCloseValidated(ValidatedAux):
