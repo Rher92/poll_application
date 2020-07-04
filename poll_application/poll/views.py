@@ -7,7 +7,7 @@ from flask import request
 from poll_application.models import User, db, Poll, \
     Question, Answer, Tag
 from .selectors import get_user, get_full_polls_data_by_user, \
-    get_questions_by_user
+    get_questions_by_user, get_polls
 from .services import save_poll, save_questions, save_tags
 from .validations import validate_all_data_to_create_poll, \
     UserValidated
@@ -87,34 +87,18 @@ def create_answer(poll_id):
 def get_poll(username, token):
     if request.method == 'GET':
         username = username.lower()
-        user = User.query.filter_by(username=username).first()
-        _validation = validation(user, token)
-        if _validation:
-            return _validation
+        user = get_user(username)
+        user_validated = UserValidated(user, token)
 
-        if request.args.get('tag'):
-            tag = (request.args.get('tag')).lower()
-            _tag = Tag.query.filter_by(title=tag).first()
+        status_code = 401
+        response = user_validated.msg
 
-            if not _tag:
-                response = {
-                    'message': 'this tag are not registrated'.format(tag)}
-                return jsonify(response), 400
+        if user_validated.valid:
+            status_code = 200
+            tag = request.args.get('tag')
+            response = get_polls(tag)
 
-            polls = Poll.query.filter(Poll.tags.contains(_tag)).all() 
-
-            if not polls:
-                response = {
-                    'message': 'there are not polls with tag:{}'.format(tag)}
-                return jsonify(response), 400           
-
-            _polls = [{'title': poll.title, 'id': poll.id} for poll in polls]
-        else:
-            polls = Poll.query.filter().all()
-            _polls = [{'title': poll.title, 'id': poll.id} for poll in polls]
-        
-        response = {'polls': _polls}
-        return jsonify(response), 200
+        return jsonify(response), status_code
 
 
 @bp.route('questions/users/<username>/token/<token>/', methods=['GET'])
