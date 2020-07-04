@@ -1,4 +1,4 @@
 export APP_SETTINGS=poll_application.config.DevelopmentConfig
 export DATABASE_URL=sqlite:////tmp/poll-application.db
 export FLASK_APP=main.py
-export PYTHONPATH=~/poll_application/poll_application/
+export PYTHONPATH=~/poll_application/
