@@ -6,7 +6,7 @@ from flask import request
 
 from poll_application.models import User, db, Poll, \
     Question, Answer, Tag
-from .selectors import get_user
+from .selectors import get_user, get_full_polls_data_by_user
 from .services import save_poll, save_questions, save_tags
 from .validations import validate_all_data_to_create_poll, \
     UserValidated
@@ -154,18 +154,14 @@ def get_questions(username, token):
 def get_questions_answers(username, token):
     if request.method == 'GET':
         username = username.lower()
-        user = User.query.filter_by(username=username).first()        
-        _validation = validation(user, token)
-        if _validation:
-            return _validation
+        user = get_user(username) 
+        user_validated = UserValidated(user, token)
 
-        _user = (request.args.get('user')).lower()
-        user = User.query.filter_by(username=_user).first()
+        status_code = 401
+        response = user_validated.msg
 
-        if not user:
-            response = {
-                'message': 'the user: {} do not exist'.format(_user)
-            }
-            return jsonify(response), 400
+        if user_validated.valid:
+            status_code = 200
+            response = get_full_polls_data_by_user(user)
 
-        return jsonify(user.get_full_data()), 200
+        return jsonify(response), status_code
