@@ -34,18 +34,6 @@ class User(db.Model):
     def __repr__(self):
         return '{}'.format(self.username)
 
-    def get_questions(self):
-        _polls = []
-        
-        for poll in self.poll:
-            _questions = []
-            _questions += [{'id': question.id, 'title':question._question} for question in poll.questions]
-            _poll_aux = {'id': poll.id, 'title': poll.title, 'questions': _questions}
-            _polls.append(_poll_aux)
-        
-        _return = {'polls': _polls}
-
-        return _return
 
 
 class Poll(db.Model):

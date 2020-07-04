@@ -6,6 +6,10 @@ def get_user(username):
     return User.query.filter_by(username=username).first()
 
 
+def get_all_users():
+    return User.query.filter().all()
+
+
 def get_full_polls_data_by_user(user):
     _data = []
     polls_lyst = []
@@ -28,3 +32,42 @@ def get_full_polls_data_by_user(user):
     _return = {'user':user.username, 'data':_data}
 
     return _return
+
+
+def get_questions_by_polls(polls):
+    _polls = []
+
+    for _poll in polls:
+        questions = []
+        questions += [{'id': question.id, 'title':question._question} for question in _poll.questions]
+        poll_aux = {'id': _poll.id, 'title': _poll.title, 'questions': questions}
+        _polls.append(poll_aux)
+    _return = {'polls': _polls}
+
+    return _return
+
+
+def get_questions_by_user(username):
+    if username == 'all':
+        user = get_all_users()
+    else:
+        user = get_user(username)
+
+    if not user:
+        return 'User not exist'
+
+    questions = []
+
+    if user.__class__ is list:
+        for _user in user:
+            questions_for_user = get_questions_by_polls(_user.poll)
+            questions.append({
+                _user.username : questions_for_user
+            })
+    else:
+        questions_for_user = get_questions_by_polls(user.poll)
+        questions.append({
+            user.username : questions_for_user
+        })
+
+    return questions
