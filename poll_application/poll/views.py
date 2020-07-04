@@ -4,85 +4,28 @@ from flask import jsonify
 from flask import Blueprint
 from flask import request
 
-from models import User, db, Poll, \
+from poll_application.models import User, db, Poll, \
     Question, Answer, Tag
+from .selectors import get_user
+from .services import save_poll, save_questions, save_tags
+from .validations import validate_all_data_to_create_poll, \
+    UserValidated
 
 bp = Blueprint('poll', __name__, url_prefix='/api/poll')
 
 @bp.route('/new/users/<username>/token/<token>/', methods=['POST'])
 def create_poll(username, token):
     if request.method == 'POST':
-        username = username.lower()        
-        user = User.query.filter_by(username=username).first()
-        _validation = validation(user, token)
-        if _validation:
-            return _validation
+        user = get_user(username.lower())
+        obj = validate_all_data_to_create_poll(user, token, request)
 
-        poll_title = (request.form.get('title')).capitalize()
-        question_titles = request.form.getlist('questions')
-        tag_titles = request.form.getlist('tags')
-        close_date =  request.form.get('close_date')
+        response = obj.msg
+        if obj.valid:
+            poll = save_poll(obj, user)
+            save_questions(obj, poll)
+            save_tags(obj, poll)
+            response = {'message': 'Success'}
 
-        if not (poll_title or question_titles or tag_titles or close_date):
-            response = {
-                'message': 'the request has not all data'
-            }
-            return jsonify(response), 400
-        
-        close_date = datetime.fromisoformat(close_date)
-        
-        if close_date < datetime.now():
-            response = {
-                'message': 'the date close must be greater than current time'
-            }
-            return jsonify(response), 400            
-
-        poll_titles = [_poll.title for _poll in user.poll]
-
-        if poll_title in poll_titles:
-            response = {
-                'message': 'this poll {} already exist for the user {}'.format(poll_title, username)
-            }
-            return jsonify(response), 400
- 
-        new_poll = Poll(
-            title=poll_title,
-            user_id=user.id,
-            close_date=close_date)
-
-        db.session.add(new_poll)
-        db.session.commit()
-
-        if not question_titles:
-            response = {
-                'message': 'this poll has no questions'
-            }
-            return jsonify(response), 400
-            
-        for _question in question_titles:
-            question = Question(
-                question=_question.capitalize(),
-                poll_id=new_poll.id)
-
-            db.session.add(question)
-            db.session.commit()        
-
-        if tag_titles:
-            for _tag in tag_titles:
-                _tag = _tag.lower()
-                tag = Tag.query.filter_by(title=_tag).first()
-                if not tag:
-                    tag = Tag(title=_tag)
-                    db.session.add(tag)
-                    db.session.commit()
-                
-                new_poll.tags.append(tag)
-            db.session.add(new_poll)
-            db.session.commit()
-
-        response = {
-            'message': 'Success'
-        }
         return jsonify(response), 200            
 
 
@@ -143,7 +86,7 @@ def create_answer(poll_id):
 def get_poll(username, token):
     if request.method == 'GET':
         username = username.lower()
-        user = User.query.filter_by(username=username).first()        
+        user = User.query.filter_by(username=username).first()
         _validation = validation(user, token)
         if _validation:
             return _validation
@@ -177,7 +120,7 @@ def get_poll(username, token):
 def get_questions(username, token):
     if request.method == 'GET':
         username = username.lower()
-        user = User.query.filter_by(username=username).first()        
+        user = User.query.filter_by(username=username).first()
         _validation = validation(user, token)
         if _validation:
             return _validation
@@ -226,20 +169,3 @@ def get_questions_answers(username, token):
             return jsonify(response), 400
 
         return jsonify(user.get_full_data()), 200
-
-
-def validation(user, token):
-    _return = None
-    
-    if not user:
-        response = {
-            'message': 'user do not exist'}
-        _return = jsonify(response), 400
-        return _return
-
-    if token != user.token:
-        response = {
-            'message': 'Invalid token'}
-        _return = jsonify(response), 400
-
-    return _return
