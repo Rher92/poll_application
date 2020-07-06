@@ -1,5 +1,9 @@
 from datetime import datetime
 
+
+MAX_ANSWER_BY_QUESTION = 4
+
+
 def validate_all_data_to_create_poll(user, token, request):
     poll_title = (request.form.get('title')).capitalize()
     question_titles = request.form.getlist('questions')
@@ -37,7 +41,6 @@ def validate_all_data_to_create_poll(user, token, request):
 
 
 class Data:
-
     def __init__(self, title, date, tags, questions):
         self.title = title
         self.close_date = date
@@ -47,8 +50,7 @@ class Data:
         self.msg = 'OK'
 
 
-class ValidatedAux:
-    
+class ValidatedAux: 
     def __init__(self, data=None, error_msg=None, valid=True):
         self.data = data
         self.msg = 'OK'
@@ -66,7 +68,6 @@ class ValidatedAux:
 
 
 class UserValidated(ValidatedAux):
-
     def __init__(self, user, token, valid=True):
         self.user = user
         self.msg = 'OK'
@@ -114,3 +115,44 @@ class PollTitlesValidated(ValidatedAux):
         if self.data in poll_titles:
            self.msg = f'this poll {self.data} already exist by the user {self.user}'
 
+
+class PollValidation:
+    def __init__(self, poll, valid=True, msg=None):
+        self.poll = poll
+        self.valid = True
+        self.msg = 'OK'
+
+        self.is_poll_exist()
+        self.is_deprecated()
+
+    def is_poll_exist(self):
+        if not self.poll:
+            self.msg = 'Not exist this poll'
+            self.valid = False
+
+    def is_deprecated(self):
+        if self.poll.close_date < datetime.now():
+            self.msg = 'the poll has deprecated'
+            self.valid = False            
+
+
+class QuestionValidation:
+    def __init__(self, question, valid=True, msg=None, has_max_answer=False):
+        self.question = question
+        self.valid = valid
+        self.msg = 'Success'
+        self.has_max_answer = has_max_answer
+
+        self.question.count()
+        self.is_question_exist()
+
+    def is_question_exist(self):
+        if not self.question:
+            self.msg = 'Not exist this questions'
+            self.valid = False
+
+    def has_max_answers(self):
+        if self.question.count == MAX_ANSWER_BY_QUESTION:
+            self.has_max_answer = True
+
+    
