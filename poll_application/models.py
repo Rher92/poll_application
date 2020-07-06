@@ -31,8 +31,8 @@ class User(db.Model):
         self.password = password
         self.email = email
 
-    def __repr__(self):
-        return '{}'.format(self.username)
+    def __str__(self):
+        return f'{self.username}'
 
 
 
@@ -62,8 +62,8 @@ class Poll(db.Model):
         self.user_id = user_id
         self.close_date = close_date
 
-    def __repr__(self):
-        return '{}'.format(self.title)      
+    def __str__(self):
+        return f'{self.title}'
 
 
 class Question(db.Model):
@@ -87,8 +87,8 @@ class Question(db.Model):
         self._question = question
         self.poll_id = poll_id
 
-    def __repr__(self):
-        return '{}'.format(self._question)
+    def __str__(self):
+        return f'{self._question}'
 
 
 class Answer(db.Model):
@@ -107,8 +107,8 @@ class Answer(db.Model):
         self._answer = _answer
         self.question_id = question_id
 
-    def __repr__(self):
-        return '{}'.format(self._answer)    
+    def __str__(self):
+        return f'{self._answer}'    
 
 
 class Tag(db.Model):
@@ -125,5 +125,5 @@ class Tag(db.Model):
     def __init__(self, title):
         self.title = title
 
-    def __repr__(self):
-        return '{}'.format(self.title)    
+    def __str__(self):
+        return f'{self.title}'
