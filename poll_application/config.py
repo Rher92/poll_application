@@ -1,6 +1,8 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+MAX_ANSWER_BY_QUESTION = 4
+
 class Config:
     DEBUG = False
     TESTING = False

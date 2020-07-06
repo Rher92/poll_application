@@ -7,10 +7,12 @@ from flask import request
 from poll_application.models import User, db, Poll, \
     Question, Answer, Tag
 from .selectors import get_user, get_full_polls_data_by_user, \
-    get_questions_by_user, get_polls
-from .services import save_poll, save_questions, save_tags
-from .validations import validate_all_data_to_create_poll, \
-    UserValidated
+    get_questions_by_user, get_polls, get_poll_by_id, \
+    get_questions_by_id_and_poll_id
+from .services import save_poll, save_questions, save_tags, \
+    save_messages
+from .validators import validate_all_data_to_create_poll, \
+    UserValidated, PollValidation, QuestionValidation
 
 bp = Blueprint('poll', __name__, url_prefix='/api/poll')
 
@@ -20,67 +22,53 @@ def create_poll(username, token):
         user = get_user(username.lower())
         obj = validate_all_data_to_create_poll(user, token, request)
 
+        status_code = 400
         response = obj.msg
         if obj.valid:
+            status_code = 200
             poll = save_poll(obj, user)
             save_questions(obj, poll)
             save_tags(obj, poll)
             response = {'message': 'Success'}
 
-        return jsonify(response), 200            
+        return jsonify(response), status_code
 
 
 @bp.route('/<poll_id>/answer', methods=['POST'])
 def create_answer(poll_id):
     if request.method == 'POST':
-        poll = Poll.query.filter_by(id=poll_id).first()
-        if not poll:
-            response = {
-                'message': 'the poll do not exist'
-            }
-            return jsonify(response), 400
-
-        if poll.close_date < datetime.now():
-            response = {
-                'message': 'the poll has expired'
-            }
-            return jsonify(response), 400            
+        poll = get_poll_by_id(poll_id)
+        poll_validation = PollValidation(poll)
         
-        payload = request.form.to_dict()
+        status_code = 400
+        response = poll_validation.msg
+        if poll_validation.valid:
+            payload = request.form.to_dict()
 
-        answer_list = []
-        for question_id in payload.keys():
-            answer = payload[question_id]
-            qid = int(question_id)
+            answers = []
+            _save_message = True
+            for question_id in payload.keys():
+                answer = payload[question_id]
+                qid = int(question_id)
+                poll_id = int(poll_id)
+                question = get_questions_by_id_and_poll_id(qid=qid, poll_id=poll_id)
+                question_valid = QuestionValidation(question)
 
-            question = Question.query.filter_by(id=qid,poll_id=poll_id).first()
-            if not question:
-                response = {
-                    'message' : 'the question with id:{} do not exist.'.format(qid)
-                }
-                return jsonify(response), 400
+                if not question_valid.valid:
+                    _save_message = False
+                    response = question_valid.msg
+                    break
 
-            if Question.query.filter_by(id=qid).first().counter == 4:
-                continue
+                if not question_valid.has_max_answer:
+                    new_answer = Answer(_answer=answer, question_id=question.id)
+                    answers.append(new_answer)
 
-            new_answer = Answer(_answer=answer, question_id=question.id)
-            answer_list.append(new_answer)
-        
-        for answer in answer_list:
-            db.session.add(answer)
-            db.session.commit()
+            if _save_message:
+                status_code = 200
+                response = {'message': 'Success'}
+                save_messages(answers)
 
-            question = Question.query.filter_by(id=answer.question_id).first()
-            counter = question.counter
-            counter += 1
-            question.counter = counter
-            db.session.add(question)
-            db.session.commit()
-
-        response = {
-            'message' : 'Success'
-        }
-        return jsonify(response), 200
+        return jsonify(response), status_code
 
 
 @bp.route('all/users/<username>/token/<token>/', methods=['GET'])

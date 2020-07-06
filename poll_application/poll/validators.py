@@ -1,8 +1,6 @@
 from datetime import datetime
 
-
-MAX_ANSWER_BY_QUESTION = 4
-
+from poll_application.config import MAX_ANSWER_BY_QUESTION
 
 def validate_all_data_to_create_poll(user, token, request):
     poll_title = (request.form.get('title')).capitalize()
@@ -143,7 +141,7 @@ class QuestionValidation:
         self.msg = 'Success'
         self.has_max_answer = has_max_answer
 
-        self.question.count()
+        self.has_max_answers()
         self.is_question_exist()
 
     def is_question_exist(self):
@@ -152,7 +150,7 @@ class QuestionValidation:
             self.valid = False
 
     def has_max_answers(self):
-        if self.question.count == MAX_ANSWER_BY_QUESTION:
+        if self.question.counter == MAX_ANSWER_BY_QUESTION:
             self.has_max_answer = True
 
     

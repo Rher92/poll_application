@@ -68,7 +68,7 @@ def get_questions_by_user(username):
     _return = 'User not exist'
     if user:
         questions = []
-        
+
         if user.__class__ is list:
             for _user in user:
                 questions_for_user = get_questions_by_polls(_user.poll)
@@ -106,4 +106,13 @@ def get_polls(tag):
         _polls = _get_all_polls_modify() 
     
     return  {'polls': _polls}
+
+
+def get_poll_by_id(poll_id):
+    return Poll.query.filter_by(id=poll_id).first()
+
+
+def get_questions_by_id_and_poll_id(qid, poll_id):
+    return Question.query.filter_by(id=qid, poll_id=poll_id).first()
+
 

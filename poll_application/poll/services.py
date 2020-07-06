@@ -33,4 +33,21 @@ def save_tags(obj, poll):
         poll.tags.append(tag)
         
     db.session.add(poll)
+    db.session.commit()
+
+
+def save_messages(answers):
+    for answer in answers:
+        db.session.add(answer)
+        db.session.commit()
+
+        increase_question_counter(answer.question_id)
+
+
+def increase_question_counter(qid):
+    question = Question.query.filter_by(id=qid).first()
+    counter = question.counter
+    counter += 1
+    question.counter = counter
+    db.session.add(question)
     db.session.commit()    
