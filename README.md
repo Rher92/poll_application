@@ -4,7 +4,7 @@ This mini-app is an API to create Polls.
 
 ## How to run the platform ##
 
-run the app in the space of your preferences, you must be the next steps:
+run the app on space of your preferences, you must follow the next steps:
 
 Step one:
   in this steps you must download the repo code. 
@@ -12,29 +12,29 @@ Step one:
   * git clone https://github.com/Rher92/poll-application.git
 
 Step two:
-  you must move to the folder where the repository is located.
+  you must move to poll_application folder, where the repository is located.
   
   * cd poll_application
   
 Step three:
-  now you have to create the docker container.
+  now, you have to create the docker container.
   
   * docker build -t flask-poll .
   
 Step four:
   once created the image, you must execute the container to play it.
   
-  * docker run -it --publish 8000:8000 flask-poll
+  * docker run -it -v ~/poll_application:/poll_application --name poll-app --publish 8000:8000 flask-poll
 
-  the container already is ok to start playing.
+  the container already is Ok to start playing.
   
   
 ## How to use the API ##
 
 Next examples, we will use the Python Requests Library to help us to make the requests.
 
-the **username** params in the url belong to your account.
-the **token** params in the url belong to your account.
+the **username** param on url belong to your account.
+the **token** param on url belong to your account.
 
 **how to create an user**
   
@@ -50,11 +50,11 @@ the **token** params in the url belong to your account.
 
   - url='http://127.0.0.1:8000/api/auth/generate_token'
   - auth=(username, password)
-  - r = requests.get(url, auth=auth)
-  - token = r.json().get('token')
+  - r = requests.put(url, auth=auth)
+  - token = r.json().put('token')
 
 
-**how to create one poll**
+**how to create a poll**
 
   - url='http://127.0.0.1:8000/api/poll/new/users/{}/token/{}'.format(username, token)
   - data={'title': 'First Poll', \
@@ -64,7 +64,7 @@ the **token** params in the url belong to your account.
   - r = requests.post(url, data = data)
 
 
-**how to get questions of all the polls**
+**how to get questions of all polls**
 
   - to get all questions of the all users:
       - url='http://127.0.0.1:8000/api/poll/questions/users/{}/token/{}'.format(username, token)
@@ -106,7 +106,7 @@ the **token** params in the url belong to your account.
     - {'poll': [{'id': 1, 'title': 'First poll'}]}
   
   
-**how to get a list of all polls with tag**
+**how to get a list of all polls through a tag**
 
   - url='http://127.0.0.1:8000/api/poll/all/users/{}/token/{}'.format(username, token)
   - params = {'tag': 'First tag'}
@@ -116,7 +116,7 @@ the **token** params in the url belong to your account.
     - {'poll': [{'id': 1, 'title': 'First poll'}]}
   
   
-**how to return full data**
+**how to return full data to one user**
  
   - url='http://127.0.0.1:8000/api/poll/questions_and_answers/users/{}/token/{}'.format(username, token)
   - params = {'user': 'Pepito'}
