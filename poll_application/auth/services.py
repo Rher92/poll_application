@@ -9,4 +9,9 @@ def create_user(username, email, password):
     )
 
     db.session.add(new_user)
-    db.session.commit()     
+    db.session.commit()
+
+
+def save_user(user):
+    db.session.add(user)
+    db.session.commit()
