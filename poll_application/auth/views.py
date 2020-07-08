@@ -4,56 +4,35 @@ from flask import jsonify
 from flask import Blueprint
 from flask import request
 from werkzeug.security import check_password_hash
-from werkzeug.security import generate_password_hash
 from base64 import b64decode
 
-from models import User, db, Poll, Question, Answer
+from poll_application.models import User, db, Poll, Question, Answer
+from .validators import CreateAccountValidator
+from .services import create_user
 
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 @bp.route('/signup', methods=['POST'])
 def signup():
-    _error = []
-
     if request.method == 'POST':
         username = (request.form.get('username')).lower()
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # data form Validation
-        if not username:
-            _error.append('Username is required.')
-        if not email:
-            _error.append('Email is required.')
-        if not password:
-            _error.append('Password is required.')
-
-        # validation if the user, username and email are registrated
-        if User.query.filter_by(username=username, email=email).first():
-            _error.append('User {} is already registered.'.format(username))
-        elif User.query.filter_by(username=username).first():
-            _error.append('Username {} is already registered.'.format(username))
-        elif User.query.filter_by(email=email).first():
-            _error.append('email {} is already registered.'.format(email))            
-
-        if _error:
-            response = {
-                'message': 'Failed',
-                'error': _error}
-            return jsonify(response), 400
-
-        new_user = User(
-            username=username,
-            email=email,
-            password=generate_password_hash(password)
+        validation =  CreateAccountValidator(
+            username,
+            email,
+            password
         )
 
-        db.session.add(new_user)
-        db.session.commit()     
+        status_code = 400
+        response = {'message': validation.msg}
+        if validation.valid:
+            response = {'message': 'Success'}
+            status_code = 201
+            create_user(username, email, password)
 
-        response = {
-            'message': 'Success'}
-        return jsonify(response), 200        
+        return jsonify(response), status_code
 
 
 @bp.route('/generate_token', methods=['GET'])
