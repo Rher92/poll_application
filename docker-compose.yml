@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+
+  poll:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: ['/usr/src/app/entrypoint.sh']
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 5002:5000
+    environment:
+      - FLASK_APP=poll_application/main.py
+      - FLASK_ENV=development
+      - APP_SETTINGS=poll_application.config.DevelopmentConfig
+      - DATABASE_URL=postgresql://postgres:postgres@poll-db:5432/poll_dev
+      - DATABASE_TEST_URL=postgresql://postgres:postgres@poll-db:5432/poll_test
+    depends_on:
+      - poll-db
+
+  poll-db:
+    build:
+      context: ./poll_application/db
+      dockerfile: Dockerfile
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres      

@@ -1,18 +1,19 @@
-FROM alpine:3.10
+FROM python:3.8.1-alpine
 
-RUN apk add --no-cache python3-dev \
-    && pip3 install --upgrade pip
+RUN apk update && \
+    apk add --virtual build-deps gcc python-dev musl-dev && \
+    apk add postgresql-dev && \
+    apk add netcat-openbsd
 
-WORKDIR /poll_application
-COPY . /poll_application
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-RUN  pip3 --no-cache-dir install -r requirements.txt
+WORKDIR /usr/src/app
 
-ENV APP_SETTINGS=poll_application.config.DevelopmentConfig
-ENV DATABASE_URL=sqlite:////tmp/poll_application.db
-ENV FLASK_APP=main.py
-ENV PYTHONPATH=/poll_application/poll_application/
+COPY ./requirements.txt /usr/src/app/requirements.txt
+RUN pip install -r requirements.txt
 
-EXPOSE 8000
-WORKDIR poll_application
-CMD flask run --host=0.0.0.0 -p 8000
+COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
+
+COPY . /usr/src/app
