@@ -19,14 +19,7 @@ Step two:
 Step three:
   now, you have to create the docker container.
   
-  * docker build -t flask-poll .
-  
-Step four:
-  once created the image, you must execute the container to play it.
-  
-  * docker run -it -v ~/poll_application:/poll_application --name poll-app --publish 8000:8000 flask-poll
-
-  the container already is Ok to start playing.
+  * docker-compose up --build
   
   
 ## How to use the API ##
