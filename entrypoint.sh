@@ -8,4 +8,4 @@ done
 
 echo "PostgreSQL started"
 
-flask run -h 0.0.0.0
+python manage.py run -h 0.0.0.0
