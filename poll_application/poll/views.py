@@ -4,8 +4,6 @@ from flask import jsonify
 from flask import Blueprint
 from flask import request
 
-from poll_application.models import User, db, Poll, \
-    Question, Answer, Tag
 from .selectors import get_user, get_full_polls_data_by_user, \
     get_questions_by_user, get_polls, get_poll_by_id, \
     get_questions_by_id_and_poll_id

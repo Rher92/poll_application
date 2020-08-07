@@ -20,6 +20,11 @@ Step three:
   now, you have to create the docker container.
   
   * docker-compose up --build
+
+Step four:
+  we do the database migration.
+
+  * docker-compose exec poll python manage.py recreate_db
   
   
 ## How to use the API ##

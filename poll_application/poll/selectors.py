@@ -1,5 +1,6 @@
-from poll_application.models import User, db, Poll, \
-    Question, Answer, Tag
+from poll_application import db
+from poll_application.auth.models import User
+from poll_application.poll.models import Poll, Question, Answer, Tag
 
 
 def get_user(username):

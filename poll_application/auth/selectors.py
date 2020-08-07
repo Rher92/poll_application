@@ -1,4 +1,4 @@
-from poll_application.models import User
+from poll_application.auth.models import User
 
 
 def get_user_by_email(email):

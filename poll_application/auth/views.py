@@ -6,7 +6,6 @@ from flask import request
 from werkzeug.security import check_password_hash
 from base64 import b64decode
 
-from poll_application.models import User, db, Poll, Question, Answer
 from .validators import CreateAccountValidator, GenerateTokenValidator
 from .services import create_user, save_user
 
